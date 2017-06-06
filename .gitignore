@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Scala template
+*.class
+*.log
+*.iml
+
+macro-counterexamples.ipr
+macro-counterexamples.iws
+project/target/
+target/
