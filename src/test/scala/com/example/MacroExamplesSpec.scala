@@ -30,18 +30,49 @@ class MacroExamplesSpec extends FlatSpec with Matchers {
     keptGuard(0) shouldEqual 1
   }
 
-  it should "remove guard from a partial function with unapply" in {
-    val removedGuard = MacroExamples.removeGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
+  it should "insert guard into a simple partial function" in {
+    val keptGuard = MacroExamples.insertGuard[Int, Int] { case x ⇒ x + 1 }
 
-    removedGuard(123) shouldEqual 124
-    removedGuard(0) shouldEqual 1
+    keptGuard(123) shouldEqual 124
+    keptGuard(0) shouldEqual 1
   }
 
-  it should "leave guard in place from a partial function with unapply" in {
-    val removedGuard = MacroExamples.removeGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
+  it should "not insert guard into a simple partial function" in {
+    val keptGuard = MacroExamples.noInsertGuard[Int, Int] { case x ⇒ x + 1 }
 
-    removedGuard(123) shouldEqual 124
-    removedGuard(0) shouldEqual 1
+    keptGuard(123) shouldEqual 124
+    keptGuard(0) shouldEqual 1
+  }
+
+  behavior of "macros with unapply in args"
+
+
+    it should "remove guard from a partial function with unapply" in {
+      val removedGuard = MacroExamples.removeGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
+
+      removedGuard(123) shouldEqual 124
+      removedGuard(0) shouldEqual 1
+    }
+
+    it should "leave guard in place from a partial function with unapply" in {
+      val removedGuard = MacroExamples.leaveGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
+
+      removedGuard(123) shouldEqual 124
+      removedGuard(0) shouldEqual 1
+    }
+
+    it should "insert guard into a partial function with unapply" in {
+      val removedGuard = MacroExamples.insertGuard[Int, Int] { case A(x) ⇒ x + 1 }
+
+      removedGuard(123) shouldEqual 124
+      removedGuard(0) shouldEqual 1
+    }
+
+  it should "not insert guard into a partial function with unapply" in {
+    val notInsertedGuard = MacroExamples.noInsertGuard[Int, Int] { case A(x) ⇒ x + 1 }
+
+    notInsertedGuard(123) shouldEqual 124
+    notInsertedGuard(0) shouldEqual 1
   }
 
   /* These tests cause an error:
