@@ -10,10 +10,17 @@ class Macros(val c: blackbox.Context) {
     val q"{ case $pattern if $guard => $body }" = pf.tree
     q"{ case $pattern => $body }"
   }
+
+  def leaveGuardImpl[A, B](pf: c.Expr[PartialFunction[A, B]]): Tree = {
+    val q"{ case $pattern if $guard => $body }" = pf.tree
+    q"{ case $pattern => $body }"
+  }
+
 }
 
 object MacroExamples {
 
   def removeGuard[A, B](pf: PartialFunction[A, B]): PartialFunction[A, B] = macro Macros.removeGuardImpl[A, B]
 
+  def leaveGuard[A, B](pf: PartialFunction[A, B]): PartialFunction[A, B] = macro Macros.leaveGuardImpl[A, B]
 }
