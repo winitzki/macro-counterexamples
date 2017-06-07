@@ -12,7 +12,9 @@ class MacroExamplesSpec extends FlatSpec with Matchers {
   behavior of "macro"
 
   it should "remove guard from a simple partial function" in {
-    val orig: PartialFunction[Int, Int] = { case x if x > 0 ⇒ x + 1 }
+    val orig: PartialFunction[Int, Int] = {
+      case x if x > 0 ⇒ x + 1
+    }
 
     orig(123) shouldEqual 124
     orig.isDefinedAt(0) shouldEqual false
@@ -46,27 +48,26 @@ class MacroExamplesSpec extends FlatSpec with Matchers {
 
   behavior of "macros with unapply in args"
 
+  it should "remove guard from a partial function with unapply" in {
+    val removedGuard = MacroExamples.removeGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
 
-    it should "remove guard from a partial function with unapply" in {
-      val removedGuard = MacroExamples.removeGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
+    removedGuard(123) shouldEqual 124
+    removedGuard(0) shouldEqual 1
+  }
 
-      removedGuard(123) shouldEqual 124
-      removedGuard(0) shouldEqual 1
-    }
+  it should "leave guard in place from a partial function with unapply" in {
+    val removedGuard = MacroExamples.leaveGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
 
-    it should "leave guard in place from a partial function with unapply" in {
-      val removedGuard = MacroExamples.leaveGuard[Int, Int] { case A(x) if x > 0 ⇒ x + 1 }
+    removedGuard(123) shouldEqual 124
+    removedGuard(0) shouldEqual 1
+  }
 
-      removedGuard(123) shouldEqual 124
-      removedGuard(0) shouldEqual 1
-    }
+  it should "insert guard into a partial function with unapply" in {
+    val removedGuard = MacroExamples.insertGuard[Int, Int] { case A(x) ⇒ x + 1 }
 
-    it should "insert guard into a partial function with unapply" in {
-      val removedGuard = MacroExamples.insertGuard[Int, Int] { case A(x) ⇒ x + 1 }
-
-      removedGuard(123) shouldEqual 124
-      removedGuard(0) shouldEqual 1
-    }
+    removedGuard(123) shouldEqual 124
+    removedGuard(0) shouldEqual 1
+  }
 
   it should "not insert guard into a partial function with unapply" in {
     val notInsertedGuard = MacroExamples.noInsertGuard[Int, Int] { case A(x) ⇒ x + 1 }
@@ -75,7 +76,14 @@ class MacroExamplesSpec extends FlatSpec with Matchers {
     notInsertedGuard(0) shouldEqual 1
   }
 
-  /* These tests cause an error:
+  it should "not insert guard into a partial function with Some.unapply" in {
+    val notInsertedGuard = MacroExamples.noInsertGuard[Option[Int], Int] { case Some(x) ⇒ x + 1 }
+
+    notInsertedGuard(Some(123)) shouldEqual 124
+    notInsertedGuard(Some(0)) shouldEqual 1
+  }
+
+  /* These tests cause an error such as this:
 
   Error:scalac: Error: Could not find proxy for val o7: Option in List(value o7, method applyOrElse, <$anon: Function1>, value removedGuard, method $anonfun$new$2, value <local MacroExamplesSpec>, class MacroExamplesSpec, package example, package com, package <root>) (currentOwner= value x )
 
