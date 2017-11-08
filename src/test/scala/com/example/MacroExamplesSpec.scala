@@ -10,7 +10,7 @@ object A {
 class MacroExamplesSpec extends FlatSpec with Matchers {
 
   behavior of "macro"
-
+/*
   it should "remove guard from a simple partial function" in {
     val orig: PartialFunction[Int, Int] = {
       case x if x > 0 ⇒ x + 1
@@ -82,6 +82,7 @@ class MacroExamplesSpec extends FlatSpec with Matchers {
     notInsertedGuard(Some(123)) shouldEqual 124
     notInsertedGuard(Some(0)) shouldEqual 1
   }
+*/
 
   /* These tests cause an error such as this:
 
